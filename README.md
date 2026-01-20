@@ -9,6 +9,10 @@
 
 开源的泛中日韩像素字体，瘦高圆体风格。
 
+## 程序依赖
+
+- [Pixel Font Knife](https://github.com/TakWolf/pixel-font-knife)
+
 ## 官方社区
 
 - [「像素字体工房」Discord 服务器](https://discord.gg/3GKtPKtjdU)
