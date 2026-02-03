@@ -1,0 +1,115 @@
+{% extends "common/base.html" %}
+{% block title %}Capsule Pixel - Alphabet {{ font_config.font_size }}px{% endblock %}
+{% block style %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        @font-face {
+            font-family: ark-pixel-12px-monospaced-latin;
+            src: url("https://ark-pixel-font.takwolf.com/ark-pixel-12px-monospaced-latin.otf.woff2");
+        }
+        {% for locale, language_flavor in locale_to_language_flavor.items() %}
+        {% with font_family = 'capsule-pixel-' ~ font_config.font_size ~ 'px-' ~ language_flavor %}
+        @font-face {
+            font-family: {{ font_family }};
+            src: url("{{ font_family }}.otf.woff2");
+        }
+        :lang({{ locale }}) {
+            font-family: {{ font_family }}, sans-serif;
+        }
+        {% endwith %}
+        {% endfor %}
+        .options-group {
+            height: 36px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: row;
+            background-color: #ffd339;
+        }
+        .option {
+            height: 100%;
+            margin-left: 24px;
+            margin-right: 24px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            color: #4b4b4b;
+            font-family: ark-pixel-12px-monospaced-latin, sans-serif;
+            font-size: 24px;
+            line-height: 36px;
+        }
+        .option input[type="radio"] {
+            display: none;
+        }
+        .option input[type="radio"] + span {
+            width: 10px;
+            height: 10px;
+            margin-left: 12px;
+            margin-right: 12px;
+            border-width: 2px;
+            border-color: #4b4b4b;
+            border-style: solid;
+        }
+        .option input[type="radio"]:checked + span {
+            background-color: #4b4b4b;
+        }
+        #content {
+            margin-top: 36px;
+            color: #4b4b4b;
+            font-size: {{ font_config.font_size_y * 4 }}px;
+            word-break: break-all;
+            background-image: linear-gradient(180deg, transparent 96%, rgba(0, 0, 0, 0.1) 96%);
+            background-size: auto {{ font_config.line_height * 4 }}px;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="options-group">
+        {% for locale, language_flavor in locale_to_language_flavor.items() %}
+        <label class="option">
+            <input id="radio-locale-{{ locale }}" name="locale" type="radio" onchange="onLocaleChange('{{ locale }}')">
+            <span></span>
+            {{ language_flavor.replace('_', '-') }}
+        </label>
+        {% endfor %}
+    </div>
+    <div id="content">
+        ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        <br>
+        abcdefghijklmnopqrstuvwxyz
+        <br>
+        0123456789 !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+        <br>
+        {{ alphabet }}
+    </div>
+    <script type="module">
+        const settings = {
+            locale: 'zh-cn',
+        }
+        const json = localStorage.getItem('capsule-pixel-font:settings:alphabet-{{ font_config.font_size }}px')
+        if (json) {
+            Object.assign(settings, JSON.parse(json))
+        }
+
+        const content = document.getElementById('content')
+
+        window.applySettings = () => {
+            localStorage.setItem('capsule-pixel-font:settings:alphabet-{{ font_config.font_size }}px', JSON.stringify(settings))
+            content.setAttribute('lang', settings.locale)
+        }
+
+        window.onLocaleChange = locale => {
+            settings.locale = locale
+            window.applySettings()
+        }
+
+        document.getElementById('radio-locale-' + settings.locale).checked = true
+        window.applySettings()
+    </script>
+{% endblock %}
